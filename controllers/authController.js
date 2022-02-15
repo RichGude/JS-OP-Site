@@ -1,6 +1,7 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 
+// Develop a signup function - despite this application won't use it by default
 exports.signUp = async (req, res) => {
     const {username, password} = req.body;
     try {
@@ -23,6 +24,7 @@ exports.signUp = async (req, res) => {
         });
     };
 };
+
 
 exports.login = async (req, res) => {
     const {username, password} = req.body;

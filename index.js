@@ -1,8 +1,11 @@
+// Load libraries
 const express = require("express");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const redis = require("redis");
 const cors = require("cors");
+const User = require("../models/userModel");
+const bcrypt = require("bcryptjs");
 let RedisStore = require("connect-redis")(session);
 
 // Define constants
@@ -28,6 +31,17 @@ const connectWithRetry = () => {
     //useFindAndModify: false,
 })
     .then(() => console.log("successfully connected to database"))
+    // Generate an authorized user for the 'users' database, if not already initialized
+    .then(() => {
+        // Utilize a standard username
+        const user = await User.findOne({username: "Admin"});
+        if (!user) {
+            const hashpassword = await bcrypt.hash("techopsrocks", 12);
+            const newUser = await User.create({
+                username: "Admin",
+                password: hashpassword});
+        };
+    })
     .catch((e) => {
         console.log(e);
         setTimeout(connectWithRetry, 5000);

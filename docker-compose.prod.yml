@@ -6,9 +6,25 @@ services:
     ports:
     - "80:80"
   node-app:
+    # Utilize docker swarm commands for node management in production
+    deploy:
+      # When deploying the app via docker swarm, this is the number of node-app containers to create in each node
+      replicas: 8
+      restart_policy:
+        condition: any
+      update_config:
+        parallelism: 2
+        delay: 15s
     build:
       context: .
       args:
         NODE_ENV: production
     environment:
       - NODE_ENV=production
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - SESSION_SECRET=${SESSION_SECRET}
+  mongo:
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
